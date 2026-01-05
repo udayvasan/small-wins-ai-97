@@ -1,26 +1,29 @@
-import { useEffect, useState } from 'react';
-import { Globe } from 'lucide-react';
+// src/components/GoogleTranslate.tsx
+import { useEffect, useState } from "react";
+import { Globe } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
+/* ------------------ Language List ------------------ */
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'zh-CN', name: '中文', flag: '🇨🇳' },
-  { code: 'ja', name: '日本語', flag: '🇯🇵' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'pt', name: 'Português', flag: '🇧🇷' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+  { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "hi", name: "हिन्दी", flag: "🇮🇳" },
+  { code: "es", name: "Español", flag: "🇪🇸" },
+  { code: "fr", name: "Français", flag: "🇫🇷" },
+  { code: "de", name: "Deutsch", flag: "🇩🇪" },
+  { code: "zh-CN", name: "中文", flag: "🇨🇳" },
+  { code: "ja", name: "日本語", flag: "🇯🇵" },
+  { code: "ar", name: "العربية", flag: "🇸🇦" },
+  { code: "pt", name: "Português", flag: "🇧🇷" },
+  { code: "ru", name: "Русский", flag: "🇷🇺" },
 ];
 
+/* ------------------ Type Fix for TS ------------------ */
 declare global {
   interface Window {
     google: any;
@@ -29,95 +32,88 @@ declare global {
 }
 
 export function GoogleTranslate() {
-  const [currentLang, setCurrentLang] = useState('en');
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [currentLang, setCurrentLang] = useState("en");
 
+  /* ------------------ Load Google Script ------------------ */
   useEffect(() => {
-    // Load Google Translate script
-    const addScript = () => {
-      if (document.getElementById('google-translate-script')) {
-        setIsLoaded(true);
-        return;
-      }
+    if (document.getElementById("google-translate-script")) return;
 
-      window.googleTranslateElementInit = () => {
-        new window.google.translate.TranslateElement(
-          {
-            pageLanguage: 'en',
-            includedLanguages: languages.map(l => l.code).join(','),
-            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-            autoDisplay: false,
-          },
-          'google_translate_element'
-        );
-        setIsLoaded(true);
-      };
-
-      const script = document.createElement('script');
-      script.id = 'google-translate-script';
-      script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-      script.async = true;
-      document.body.appendChild(script);
+    window.googleTranslateElementInit = () => {
+      new window.google.translate.TranslateElement(
+        {
+          pageLanguage: "en",
+          includedLanguages: languages.map(l => l.code).join(","),
+          autoDisplay: false,
+        },
+        "google_translate_element"
+      );
     };
 
-    addScript();
+    const script = document.createElement("script");
+    script.id = "google-translate-script";
+    script.src =
+      "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    script.async = true;
+    document.body.appendChild(script);
 
-    // Add CSS to hide Google Translate bar
-    const style = document.createElement('style');
-    style.id = 'google-translate-custom-styles';
+    /* -------- Hide Google Default UI -------- */
+    const style = document.createElement("style");
     style.innerHTML = `
-      .goog-te-banner-frame, .goog-te-gadget-icon, #google_translate_element, .skiptranslate {
+      .goog-te-banner-frame,
+      .goog-logo-link,
+      .goog-te-gadget {
         display: none !important;
       }
       body {
         top: 0 !important;
       }
-      .goog-te-gadget {
-        display: none !important;
-      }
     `;
     document.head.appendChild(style);
-
-    return () => {
-      const existingStyle = document.getElementById('google-translate-custom-styles');
-      if (existingStyle) existingStyle.remove();
-    };
   }, []);
 
+  /* ------------------ Translate Function ------------------ */
   const translatePage = (langCode: string) => {
     setCurrentLang(langCode);
-    
-    // Use Google Translate cookie approach
-    const googleTranslateSelect = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-    if (googleTranslateSelect) {
-      googleTranslateSelect.value = langCode;
-      googleTranslateSelect.dispatchEvent(new Event('change'));
+
+    const select = document.querySelector(
+      ".goog-te-combo"
+    ) as HTMLSelectElement;
+
+    if (select) {
+      select.value = langCode;
+      select.dispatchEvent(new Event("change"));
     } else {
-      // Fallback: Set cookie for Google Translate
+      // fallback (first load)
       document.cookie = `googtrans=/en/${langCode}; path=/`;
-      document.cookie = `googtrans=/en/${langCode}; path=/; domain=${window.location.hostname}`;
       window.location.reload();
     }
   };
 
-  const currentLanguage = languages.find(l => l.code === currentLang) || languages[0];
+  const activeLang =
+    languages.find(l => l.code === currentLang) || languages[0];
 
+  /* ------------------ UI ------------------ */
   return (
     <>
-      <div id="google_translate_element" className="hidden" />
+      {/* Hidden Google Element */}
+      <div id="google_translate_element" style={{ display: "none" }} />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="gap-2">
             <Globe className="w-4 h-4" />
-            <span className="hidden sm:inline">{currentLanguage.flag}</span>
+            <span>{activeLang.flag}</span>
           </Button>
         </DropdownMenuTrigger>
+
         <DropdownMenuContent align="end" className="w-48">
-          {languages.map((lang) => (
+          {languages.map(lang => (
             <DropdownMenuItem
               key={lang.code}
               onClick={() => translatePage(lang.code)}
-              className={`cursor-pointer ${currentLang === lang.code ? 'bg-accent' : ''}`}
+              className={`cursor-pointer ${
+                currentLang === lang.code ? "bg-accent" : ""
+              }`}
             >
               <span className="mr-2">{lang.flag}</span>
               {lang.name}
