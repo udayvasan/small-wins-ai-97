@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Flame } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { GoogleTranslate } from '@/components/GoogleTranslate';
 
 export function Navbar() {
   return (
@@ -14,6 +15,7 @@ export function Navbar() {
         </Link>
         
         <div className="flex items-center gap-3">
+          <GoogleTranslate />
           <Link to="/auth?mode=signin">
             <Button variant="ghost" size="sm">Sign In</Button>
           </Link>
