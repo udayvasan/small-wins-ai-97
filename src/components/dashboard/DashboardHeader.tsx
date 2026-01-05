@@ -2,8 +2,9 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Flame, LogOut, User, Trophy, Zap } from 'lucide-react';
+import { Flame, LogOut, User, Trophy } from 'lucide-react';
 import { Profile } from '@/pages/Dashboard';
+import { GoogleTranslate } from '@/components/GoogleTranslate';
 
 interface DashboardHeaderProps {
   profile: Profile | null;
@@ -62,6 +63,9 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
             <Flame className="w-4 h-4 text-streak-foreground animate-fire-pulse" />
             <span className="text-sm font-bold text-streak-foreground">{profile?.current_streak || 0}</span>
           </motion.div>
+
+          {/* Translate */}
+          <GoogleTranslate />
 
           {/* Profile */}
           <Button 

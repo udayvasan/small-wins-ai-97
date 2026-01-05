@@ -122,6 +122,7 @@ export type Database = {
           current_streak: number | null
           full_name: string | null
           id: string
+          last_streak_date: string | null
           level: number | null
           longest_streak: number | null
           total_wins: number | null
@@ -136,6 +137,7 @@ export type Database = {
           current_streak?: number | null
           full_name?: string | null
           id?: string
+          last_streak_date?: string | null
           level?: number | null
           longest_streak?: number | null
           total_wins?: number | null
@@ -150,6 +152,7 @@ export type Database = {
           current_streak?: number | null
           full_name?: string | null
           id?: string
+          last_streak_date?: string | null
           level?: number | null
           longest_streak?: number | null
           total_wins?: number | null

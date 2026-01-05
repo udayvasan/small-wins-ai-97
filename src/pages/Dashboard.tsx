@@ -80,7 +80,10 @@ export default function Dashboard() {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (profileData) setProfile(profileData);
+      if (profileData) setProfile({
+        ...profileData,
+        last_streak_date: profileData.last_streak_date ?? null,
+      });
 
       /* Fetch habits */
       const { data: habitsData } = await supabase
